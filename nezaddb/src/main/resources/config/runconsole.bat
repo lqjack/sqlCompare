@@ -1,0 +1,1 @@
+java -cp .;..\lib\commons-logging-1.1.1.jar;..\lib\httpclient-4.0.jar;..\lib\httpcore-4.0.1.jar;..\lib\mysql-connector-java-5.1.10-bin.jar communication.Console

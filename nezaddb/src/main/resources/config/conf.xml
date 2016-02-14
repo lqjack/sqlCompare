@@ -1,0 +1,17 @@
+<SiteConfiguration>
+    <default>
+        <dataport>7000</dataport>
+        <ctrlport>8000</ctrlport>
+    </default>
+    <datanode>
+    </datanode>
+    <controlsite>
+        <addr>localhost</addr>
+    </controlsite>
+    <DatabaseConfiguration>
+        <host>localhost</host>
+        <user>root</user>
+        <pasw>111111</pasw>
+        <dbname>ddb</dbname>
+    </DatabaseConfiguration>
+</SiteConfiguration>
