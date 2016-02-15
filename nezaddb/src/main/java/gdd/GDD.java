@@ -16,12 +16,131 @@ import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Vector;
 
 import org.culturegraph.mf.sql.connection.ConnectionUtils;
 
+import com.github.jinahya.sql.database.metadata.bind.Catalog;
+import com.github.jinahya.sql.database.metadata.bind.Column;
 import com.github.jinahya.sql.database.metadata.bind.MetadataContext;
+import com.github.jinahya.sql.database.metadata.bind.Schema;
 import com.github.jinahya.sql.database.metadata.bind.Table;
+
+class AllSite {
+	Map<String, SiteMeta> sites;
+
+	void add(SiteMeta site) {
+		sites.put(site.name, site);
+	}
+
+	String getFullName(ColumnMeta column) throws ColumnNotFoundException,
+			MutipleDefitionExeception {
+		int foundNum = 0;
+		String fullColumnName = "";
+		for (Entry<String, SiteMeta> entrySite : sites.entrySet()) {
+			fullColumnName = entrySite.getValue().getColumnPartName(column);
+			if (fullColumnName != null && !fullColumnName.equals(""))
+				foundNum++;
+		}
+		if (foundNum < 1)
+			throw new ColumnNotFoundException(column.name + " not found ");
+		if (foundNum > 1)
+			throw new MutipleDefitionExeception(column.name
+					+ " have mutiple definition ");
+		return fullColumnName;
+	}
+}
+
+class SiteMeta extends Description {
+	List<CatalogMeta> catalogs;
+
+	void add(CatalogMeta cat) {
+		catalogs.add(cat);
+	}
+
+	String getColumnPartName(ColumnMeta column) throws ColumnNotFoundException,
+			MutipleDefitionExeception {
+		for (CatalogMeta cat : catalogs) {
+			return cat.getColumnPartName(column);
+		}
+		return null;
+	}
+}
+
+class CatalogMeta extends Description {
+	List<SchemaMeta> schemas;
+
+	void add(SchemaMeta schema) {
+		schemas.add(schema);
+	}
+
+	String getColumnPartName(ColumnMeta column) throws ColumnNotFoundException,
+			MutipleDefitionExeception {
+
+		for (SchemaMeta schema : schemas) {
+			return schema.getColumnPartName(column);
+		}
+		return null;
+	}
+}
+
+class SchemaMeta extends Description {
+	List<TableMeta> tables;
+
+	void add(TableMeta tableInfo) {
+		tables.add(tableInfo);
+	}
+
+	String getColumnPartName(ColumnMeta column) throws ColumnNotFoundException,
+			MutipleDefitionExeception {
+		int foundNum = 0;
+		String fullColumnName = "";
+		for (TableMeta tab : tables) {
+			fullColumnName = tab.getColumnPartName(column);
+			if (fullColumnName != null && !fullColumnName.equals(""))
+				foundNum++;
+		}
+		if (foundNum < 1)
+			throw new ColumnNotFoundException(column.name
+					+ " not found under the schema : " + this.name);
+		if (foundNum > 1)
+			throw new MutipleDefitionExeception(column.name
+					+ " have mutiple definition found under the schema : "
+					+ this.name);
+		return fullColumnName;
+	}
+}
+
+class TableMeta extends Description {
+	List<ColumnMeta> cols;
+
+	void add(ColumnMeta col) {
+		cols.add(col);
+	}
+
+	String getColumnPartName(ColumnMeta column) {
+		for (ColumnMeta col : cols) {
+			if (column.name.equals(col.name))
+				return name + "." + column.name;
+		}
+		return null;
+	}
+}
+
+class ColumnMeta extends Description {
+	String colType;
+
+	ColumnMeta(String colName) {
+		this.name = colName;
+	}
+}
+
+class Description {
+	String remark;
+	String name;
+}
 
 public class GDD {
 	private String dbName;
@@ -29,6 +148,8 @@ public class GDD {
 	private int siteNum;
 	private Vector<TableInfo> tableInfos;
 	private Vector<SiteInfo> siteInfos;
+	
+	AllSite allSite;
 	// private Object SimpleExpression;
 
 	public static final String CONTROL_SERVER_CONFIG = "config/gddserver.config";
@@ -45,9 +166,11 @@ public class GDD {
 		this.siteInfos = new Vector<SiteInfo>();
 	}
 
-	private GDD(String driverClass, String url, String user, String password) throws SQLException, ReflectiveOperationException {
+	private GDD(String driverClass, String url, String user, String password)
+			throws SQLException, ReflectiveOperationException {
 		init();
-		initData(ConnectionUtils.getConnection(driverClass, url, user, password));
+		initData(ConnectionUtils
+				.getConnection(driverClass, url, user, password));
 	}
 
 	private static GDD instance;
@@ -59,8 +182,9 @@ public class GDD {
 		return instance;
 	}
 
-	public synchronized GDD getInstance(String driverClass, String url,
-			String user, String password) throws SQLException, ReflectiveOperationException {
+	public synchronized static GDD getInstance(String driverClass, String url,
+			String user, String password) throws SQLException,
+			ReflectiveOperationException {
 		if (instance == null) {
 			instance = new GDD(driverClass, url, user, password);
 		}
@@ -68,28 +192,59 @@ public class GDD {
 	}
 
 	/**
-	 * set Vecotr by metaData
+	 * set Vector by metaData
 	 * 
 	 * @param connection
-	 * @throws SQLException 
-	 * @throws ReflectiveOperationException 
+	 * @throws SQLException
+	 * @throws ReflectiveOperationException
 	 */
-	private void initData(final Connection connection) throws SQLException, ReflectiveOperationException {
+	private void initData(final Connection connection) throws SQLException,
+			ReflectiveOperationException {
 		final DatabaseMetaData database = connection.getMetaData();
-        initTableInfo(database);
-        initSiteInfo(database);
+		final MetadataContext context = new MetadataContext(database);
+
+		initAllSite(context);
+		initTableInfo(context);
+		initSiteInfo(database);
+	}
+
+	private void initAllSite(final MetadataContext context)
+			throws SQLException, ReflectiveOperationException {
+		List<Catalog> catalogs = context.getCatalogs();
+		for (Catalog catalog : catalogs) {
+			CatalogMeta catalogMeta = new CatalogMeta();
+			List<Schema> schemas = context.getSchemas(catalog.toString(), "*");
+			for (Schema schema : schemas) {
+				SchemaMeta schemaMeta = new SchemaMeta();
+				List<Table> tables = context.getTables(catalog.toString(),
+						schema.toString(), "*", new String[] {});
+				for (Table table : tables) {
+					TableMeta tableMeata = new TableMeta();
+					List<Column> columns = context.getColumns(
+							catalog.toString(), schema.toString(),
+							table.toString(), "*");
+					for (Column col : columns) {
+						tableMeata.add(new ColumnMeta(col.getColumnName()));
+					}
+					schemaMeta.add(tableMeata);
+				}
+				catalogMeta.add(schemaMeta);
+			}
+			SiteMeta siteMeta = new SiteMeta();
+			siteMeta.add(catalogMeta);
+			allSite.add(siteMeta);
+		}
+	}
+
+	private void initTableInfo(final MetadataContext context)
+			throws SQLException, ReflectiveOperationException {
+		List<Table> tables = context.getMetadata().getTables();
+		tableInfos.addAll(TableConver.conver(tables));
 	}
 
 	private void initSiteInfo(final DatabaseMetaData database) {
 		// TODO Auto-generated method stub
-		
-	}
 
-	private void initTableInfo(final DatabaseMetaData database)
-			throws SQLException, ReflectiveOperationException {
-		final MetadataContext context = new MetadataContext(database);
-		List<Table> tables = context.getMetadata().getTables();
-		tableInfos.addAll(TableConver.conver(tables));
 	}
 
 	public BufferedReader getStringReader(String filepath) throws IOException,
@@ -101,7 +256,7 @@ public class GDD {
 		return StringReader;
 	}
 
-	public ColumnInfo ReadColumnInfo(BufferedReader br) {
+	public ColumnInfo readColumnInfo(BufferedReader br) {
 		ColumnInfo columninfo = null;
 		String str = null;
 		int index;
@@ -132,7 +287,7 @@ public class GDD {
 		return columninfo;
 	}
 
-	public FragmentationInfo ReadFragmentationInfo(BufferedReader br,
+	public FragmentationInfo readFragmentationInfo(BufferedReader br,
 			int fragType) {
 		FragmentationInfo fraginfo = null;
 		FragmentationCondition fragCondition = null;
@@ -222,7 +377,7 @@ public class GDD {
 				}
 
 				for (int i = 0; i < tableinfo.getColNum(); i++) {
-					ColumnInfo columninfo = ReadColumnInfo(br);
+					ColumnInfo columninfo = readColumnInfo(br);
 					tableinfo.getColumnInfo().add(columninfo);
 				}
 			}
@@ -242,7 +397,7 @@ public class GDD {
 				}
 
 				for (int i = 0; i < tableinfo.getFragNum(); i++) {
-					FragmentationInfo fraginfo = ReadFragmentationInfo(br,
+					FragmentationInfo fraginfo = readFragmentationInfo(br,
 							tableinfo.getFragType());
 					tableinfo.getFragmentationInfo().add(fraginfo);
 				}
@@ -488,7 +643,7 @@ public class GDD {
 	 * @param tableName
 	 *            String, table name
 	 */
-	public int GetTableColumnNum(String tableName) {
+	public int getTableColumnNum(String tableName) {
 		if (!isTableExist(tableName))
 			return -1;
 		TableInfo tableinfo = getTableInfo(tableName);

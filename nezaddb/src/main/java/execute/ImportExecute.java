@@ -20,8 +20,8 @@ import executeReturnResult.ImportReturnResult;
 
 import gdd.FragmentationInfo;
 import gdd.GDD;
-import gdd.SiteInfo;
-import gdd.TableInfo;
+import gdd.SiteMeta;
+import gdd.TableMeta;
 import gdd.Utility;
 import globalDefinition.CONSTANT;
 import globalDefinition.SimpleExpression;
@@ -116,8 +116,8 @@ public class ImportExecute extends ExecuteSQL{
 	public boolean allocateTaskSites() throws IOException{
 		boolean flag = true;
 		
-		Vector<SiteInfo> siteinfos  = gdd.getSiteInfo();
-		SiteInfo siteinfo = null;
+		Vector<SiteMeta> siteinfos  = gdd.getSiteInfo();
+		SiteMeta siteinfo = null;
 		ClientBase client;
 		boolean r;
 		
@@ -278,7 +278,7 @@ public class ImportExecute extends ExecuteSQL{
 			tableName = str.substring(0, index);
 		System.out.println("tableName="+tableName);
 		
-		TableInfo tableinfo = gdd.getTableInfo(tableName);
+		TableMeta tableinfo = gdd.getTableInfo(tableName);
 		columns = tableinfo.getColumnNames();
 		fragType = tableinfo.getFragType();
 		colNum = 0;
@@ -299,7 +299,7 @@ public class ImportExecute extends ExecuteSQL{
 		int i;
 		String str;
 		int fragType;
-		TableInfo tableinfo = gdd.getTableInfo(tableName);
+		TableMeta tableinfo = gdd.getTableInfo(tableName);
 		fragType = tableinfo.getFragType();
 		switch(fragType){
 			case CONSTANT.FRAG_HORIZONTAL:
@@ -314,7 +314,7 @@ public class ImportExecute extends ExecuteSQL{
 	
 	public boolean genImportUnitsHorizontal(BufferedReader br,String tableName,Vector<String>columns,int colNum){
 		String str;
-		TableInfo tableinfo = gdd.getTableInfo(tableName);
+		TableMeta tableinfo = gdd.getTableInfo(tableName);
 		int fragSize = tableinfo.getFragNum(); 
 		Vector<FragmentationInfo>fragInfos = tableinfo.getFragmentationInfo();
 		
@@ -431,7 +431,7 @@ public class ImportExecute extends ExecuteSQL{
 	
 	public boolean genImportUnitsVertical(BufferedReader br,String tableName,Vector<String>columns,int colNum){
 		String str;
-		TableInfo tableinfo = gdd.getTableInfo(tableName);
+		TableMeta tableinfo = gdd.getTableInfo(tableName);
 		int fragSize = tableinfo.getFragNum();
 		Vector<FragmentationInfo>fragInfos = tableinfo.getFragmentationInfo();
 		Vector<ImportExecuteResultUnit> importUnits = new Vector();

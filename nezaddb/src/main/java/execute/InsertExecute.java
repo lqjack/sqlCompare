@@ -14,8 +14,8 @@ import executeReturnResult.ExecuteReturnResult;
 import executeReturnResult.InsertReturnResult;
 import gdd.FragmentationInfo;
 import gdd.GDD;
-import gdd.SiteInfo;
-import gdd.TableInfo;
+import gdd.SiteMeta;
+import gdd.TableMeta;
 import globalDefinition.CONSTANT;
 import globalDefinition.ExpressionJudger;
 import globalDefinition.SimpleExpression;
@@ -75,7 +75,7 @@ public class InsertExecute extends ExecuteSQL{
 		this.insertReturnResult = new InsertReturnResult();
 		//for(int i = 0 ; i < 1 ; i++){
 		for(int i = 0 ; i < this.insertResults.size() ; i++){
-			SiteInfo siteinfo = gdd.getSiteInfo(this.insertResults.elementAt(i).getSiteName());
+			SiteMeta siteinfo = gdd.getSiteInfo(this.insertResults.elementAt(i).getSiteName());
 			ClientBase client = new ClientBase(siteinfo.getSiteIP(), siteinfo.getSitePort());
 			System.out.println("client create success");
 			Object result = client.sendContext("inserttable", this.insertResults.elementAt(i));	
@@ -113,7 +113,7 @@ public class InsertExecute extends ExecuteSQL{
 		tableName = root.getCondList().get(0).tableName;
 		
 		System.out.println("tablename="+tableName);
-		TableInfo tableinfo = gdd.getTableInfo(tableName);
+		TableMeta tableinfo = gdd.getTableInfo(tableName);
 		int fragType = tableinfo.getFragType();
 		
 		switch(fragType){

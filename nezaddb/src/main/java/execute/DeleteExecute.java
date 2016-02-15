@@ -11,8 +11,8 @@ import executeResult.DeleteExecuteResult;
 import executeReturnResult.DeleteReturnResult;
 import gdd.FragmentationInfo;
 import gdd.GDD;
-import gdd.SiteInfo;
-import gdd.TableInfo;
+import gdd.SiteMeta;
+import gdd.TableMeta;
 import globalDefinition.CONSTANT;
 import globalDefinition.SimpleExpression;
 import parserResult.DeleteResult;
@@ -73,7 +73,7 @@ public class DeleteExecute extends ExecuteSQL{
 		this.deleteReturnResult = new DeleteReturnResult();
 		//for(int i = 0 ; i < 1 ; i++){
 		for(int i = 0 ; i < this.deleteResults.size() ; i++){
-			SiteInfo siteinfo = gdd.getSiteInfo(this.deleteResults.elementAt(i).getSiteName());
+			SiteMeta siteinfo = gdd.getSiteInfo(this.deleteResults.elementAt(i).getSiteName());
 			ClientBase client = new ClientBase(siteinfo.getSiteIP(), siteinfo.getSitePort());
 			System.out.println("client create success");
 			Object result = client.sendContext("deletetable", this.deleteResults.elementAt(i));	
@@ -97,7 +97,7 @@ public class DeleteExecute extends ExecuteSQL{
 							break;
 						case CONSTANT.FRAG_VERTICAL:
 							String tablename = this.deleteResults.elementAt(i).getTableName();
-							TableInfo  tableinfo = gdd.getTableInfo(tablename);
+							TableMeta  tableinfo = gdd.getTableInfo(tablename);
 							Vector<FragmentationInfo> fraginfos = tableinfo.getFragmentationInfo();
 							for(int k = 0 ; k < fraginfos.size() ; k++){
 								fraginfos.elementAt(i).setFragSize(fraginfos.elementAt(i).getFragSize() - slaveDeleteResult.getAffectedNum());
@@ -126,7 +126,7 @@ public class DeleteExecute extends ExecuteSQL{
 		tableName = root.getCondList().get(0).tableName;
 		
 		System.out.println("tablename="+tableName);
-		TableInfo tableinfo = gdd.getTableInfo(tableName);
+		TableMeta tableinfo = gdd.getTableInfo(tableName);
 		int fragType = tableinfo.getFragType();
 		
 		switch(fragType){

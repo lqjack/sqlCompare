@@ -1,21 +1,21 @@
 package execute;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.Vector;
 
-import communication.ClientBase;
-import communication.GlobalQueryCache;
-import dbcore.DbTable;
+import parserResult.ParseResult;
+import parserResult.SelectResult;
+import queryTree.QueryTree;
+import queryTree.TreeNode;
 
+import communication.ClientBase;
+
+import dbcore.DbTable;
 import executeResult.SelectExecuteResult;
 import executeResult.SiteExecuteResult;
 import executeReturnResult.SelectReturnResult;
 import gdd.GDD;
-import gdd.SiteInfo;
-import parserResult.ParseResult;
-import parserResult.SelectResult;
-import queryTree.*;
+import gdd.SiteMeta;
 
 public class SelectExecute extends ExecuteSQL {
     private SelectReturnResult selectReturnResult = null;
@@ -32,9 +32,9 @@ public class SelectExecute extends ExecuteSQL {
     
     class ClearCacheJob implements Runnable {
         public void run() {
-            Vector<SiteInfo> siteInfos = GDD.getInstance().getSiteInfo();
+            Vector<SiteMeta> siteInfos = GDD.getInstance().getSiteInfo();
             for(int i = 0 ; i < siteInfos.size() ; i++){
-                SiteInfo siteinfo = siteInfos.elementAt(i);
+                SiteMeta siteinfo = siteInfos.elementAt(i);
                 ClientBase client = new ClientBase(siteinfo.getSiteIP(),siteinfo.getSitePort());
                 System.out.println("clear cache@" + siteinfo.getSiteName() + " id " + uId);
                 try {
@@ -48,10 +48,9 @@ public class SelectExecute extends ExecuteSQL {
 
     @Override
     public void execute(ParseResult result) {
-        // TODO Auto-generated method stub
         QueryTree tree = ((SelectResult) result).getSelectTree();
         TreeNode root = tree.getRoot();
-        SiteInfo siteinfo = GDD.getInstance().getSiteInfo(root.getSiteID());
+        SiteMeta siteinfo = GDD.getInstance().getSiteInfo(root.getSiteID());
         int count = tree.getClassficationSize();
         SelectExecuteResult exeResult = new SelectExecuteResult(root, count, uId);
         ClientBase client = new ClientBase(siteinfo.getSiteIP(), siteinfo.getSitePort());

@@ -10,6 +10,7 @@
 		<module>nezaddb</module>
 		<module>sqlparser</module>
 		<module>database-metadata-bind</module>
+		<module>metafacture</module>
 	</modules>
 
 	<build>

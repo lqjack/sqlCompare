@@ -8,6 +8,7 @@ import gdd.SiteInfo;
 
 import java.io.File;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.Vector;
 
 import parserResult.AllocateResult;
@@ -40,6 +41,10 @@ public class Execute implements ParseResultVisitor{
 		gdd.GDDReader(GDD.CONTROL_SERVER_CONFIG);
 	}
 	
+	public Execute(String driverClass,String url,String user,String password) throws SQLException, ReflectiveOperationException{
+//		gdd = GDD.getInstance(driverClass, url, user, password);
+	}
+	
 	public void execute(String sql, boolean opt){
 	    try {
 	        SqlParser parser = new SqlParser(sql,opt);
@@ -49,15 +54,16 @@ public class Execute implements ParseResultVisitor{
 	    } catch (Exception ex) {
 	        returnResult = new ErrorReturnResult("Parser : failed , you may check whether the table exist");
 	    }
-		
-		try{
+	    
+//TODO : should not send the data to site
+/*		try{
 			if(sendGDDFileToSites()){
 				System.out.println("transfer gdd file to all sites succeed!");
 			}
 		}catch(IOException e){
 			System.out.println(e.toString());
 		}
-	}
+*/	}
 	
 	public ExecuteReturnResult getParseTree(String sql, boolean opt) {
 	    ExecuteReturnResult result = null;
@@ -97,9 +103,7 @@ public class Execute implements ParseResultVisitor{
 	
 	
 	public boolean sendGDDFileToSites()throws IOException{ 
-		
 		Vector<SiteInfo> siteInfos = gdd.getSiteInfo();
-		
 		for(int i = 0 ; i < siteInfos.size() ; i++){
 			SiteInfo siteinfo = siteInfos.elementAt(i);
 			ClientBase client = new ClientBase(siteinfo.getSiteIP(),siteinfo.getSitePort());

@@ -6,7 +6,7 @@ import java.util.Vector;
 import gdd.FragmentationCondition;
 import gdd.FragmentationInfo;
 import gdd.GDD;
-import gdd.TableInfo;
+import gdd.TableMeta;
 import globalDefinition.CONSTANT;
 import parserResult.ParseResult;
 import parserResult.VFragmentResult;
@@ -30,7 +30,7 @@ public class VFragmentExecute extends ExecuteSQL{
 			System.exit(-1);
 		}
 		
-		TableInfo tableInfo = gdd.getTableInfo(tableName);
+		TableMeta tableInfo = gdd.getTableInfo(tableName);
 		List subTable = fragmentResult.getSubTableList();
 		List<List>columns = fragmentResult.getColumns();
 		tableInfo.setFragmentationNum(subTable.size());

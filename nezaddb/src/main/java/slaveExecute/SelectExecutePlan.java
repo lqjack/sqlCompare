@@ -2,8 +2,8 @@ package slaveExecute;
 
 import gdd.ColumnInfo;
 import gdd.GDD;
-import gdd.SiteInfo;
-import gdd.TableInfo;
+import gdd.SiteMeta;
+import gdd.TableMeta;
 import globalDefinition.CONSTANT;
 import globalDefinition.SimpleExpression;
 
@@ -172,9 +172,9 @@ public class SelectExecutePlan {
                     addrList.add(ips.nextElement().getHostAddress());
                 }
             }
-            Vector<SiteInfo> sites = gdd.getSiteInfo();
+            Vector<SiteMeta> sites = gdd.getSiteInfo();
             for (int i = 0; i < sites.size(); i++) {
-                SiteInfo site = sites.get(i);
+                SiteMeta site = sites.get(i);
                 if (addrList.contains(site.getSiteIP())
                         && site.getSitePort() == defaultPort) {
                     return site.getSiteID();
@@ -221,7 +221,7 @@ public class SelectExecutePlan {
                 System.out.println("DataServer : sendExecutionPlan "+ex.toString());
             }
         }*/
-        SiteInfo site = GDD.getInstance().getSiteInfo(root.getSiteID());
+        SiteMeta site = GDD.getInstance().getSiteInfo(root.getSiteID());
         SelectExecuteResult exeResult = new SelectExecuteResult(root, classesCount, uid);
         ClientBase client = new ClientBase(site.getSiteIP(), site.getSitePort());
         long start = System.currentTimeMillis();
@@ -269,7 +269,7 @@ public class SelectExecutePlan {
         String[] col = attr.split("\\.", 2);
         String str = "";
         if (col[1].equals("*")) {
-            TableInfo tinfo = GDD.getInstance().getTableInfo(col[0]);
+            TableMeta tinfo = GDD.getInstance().getTableInfo(col[0]);
             Iterator<ColumnInfo> it = tinfo.getColumnInfo().iterator();
             while (it.hasNext()) {
                 str += col[0] + "_" + it.next().getColumnName();

@@ -21,7 +21,6 @@ import org.apache.http.entity.EntityTemplate;
 import org.apache.http.entity.FileEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 
-
 public class ClientBase {
     private String host;
     private int port;

@@ -7,7 +7,7 @@ import communication.ClientBase;
 
 import executeResult.CreateDBExecuteResult;
 import gdd.GDD;
-import gdd.SiteInfo;
+import gdd.SiteMeta;
 import parserResult.CreateDatabaseResult;
 import parserResult.ParseResult;
 
@@ -37,9 +37,9 @@ public class CreateDBExecute extends ExecuteSQL{
 		String createDBSql = "create database " + gdd.getDBName() + ";";
 		
 		
-		Vector<SiteInfo> siteinfos  = gdd.getSiteInfo();
+		Vector<SiteMeta> siteinfos  = gdd.getSiteInfo();
 		for(int i = 0 ; i < siteinfos.size() ; i++){
-			SiteInfo siteinfo = siteinfos.elementAt(i);
+			SiteMeta siteinfo = siteinfos.elementAt(i);
 			
 			CreateDBExecuteResult dbCreate = new CreateDBExecuteResult();
 			dbCreate.setSql(createDBSql);

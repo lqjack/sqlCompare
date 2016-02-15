@@ -1,11 +1,12 @@
 package net.sf.jsqlparser;
+import java.sql.SQLException;
+
 import org.junit.Test;
 
 import execute.Execute;
 
 
 /**
- *  	CCJSqlParserManager pm = new  CCJSqlParserManager();
 		String sql = "select a,b,c,d from t1,t2 where a=3 and b=4 ";
 		sql = "delete from abcdefg  where b=3 and c=5 and d<>6 and e>=7";
 		sql = "drop table t1";
@@ -57,10 +58,20 @@ import execute.Execute;
  *
  */
 public class JSQLTest{
-	@Test
-	public void test() {
+	
+	static String driverClass = "";
+	static String url = "";
+	static String userName = "";
+	static String password = "";
+	
+	public static void main(String[] args) throws SQLException, ReflectiveOperationException {
 		String sql = "select a,b,c,d from t1,t2 where a=3 and b=4 ";
-		Execute execute2 = new Execute();
+		Execute execute2 = new Execute(driverClass, url, userName, password);
 		execute2.execute(sql, true);
+	}
+	
+	@Test
+	public void test() throws SQLException, ReflectiveOperationException {
+		
 	}
 }

@@ -3,7 +3,7 @@ package execute;
 import java.util.List;
 import gdd.ColumnInfo;
 import gdd.GDD;
-import gdd.TableInfo;
+import gdd.TableMeta;
 import parserResult.CreateTableResult;
 import parserResult.ParseResult;
 
@@ -23,7 +23,7 @@ public class CreateTableExecute extends ExecuteSQL {
 			System.exit(-1);
 		}
 		
-		TableInfo table = new TableInfo();
+		TableMeta table = new TableMeta();
 		table.setTableName(tablename);
 		table.setDBName(gdd.getDBName());
 		

@@ -6,8 +6,8 @@ import executeReturnResult.GDDReturnResult;
 import gdd.ColumnInfo;
 import gdd.FragmentationInfo;
 import gdd.GDD;
-import gdd.SiteInfo;
-import gdd.TableInfo;
+import gdd.SiteMeta;
+import gdd.TableMeta;
 import globalDefinition.CONSTANT;
 
 public class GDDExecute {
@@ -35,10 +35,10 @@ public class GDDExecute {
 		this.gddReturnResult.tableinfoName.add("FragName");
 		this.gddReturnResult.tableinfoName.add("FragSize");
 
-		Vector<TableInfo> tableInfos = gdd.getTableInfos();
+		Vector<TableMeta> tableInfos = gdd.getTableInfos();
 		for (int i = 0; i < tableInfos.size(); i++) {
 			Vector<String> singletable = new Vector();
-			TableInfo tableinfo = tableInfos.elementAt(i);
+			TableMeta tableinfo = tableInfos.elementAt(i);
 			// s = "tableName="+ tableinfo.getTableName();
 			// s +=",  columnSize="+tableinfo.getColNum();
 			// /this.gddTableInfos.add(s);
@@ -85,7 +85,7 @@ public class GDDExecute {
 			this.gddReturnResult.gddTableInfos.add(singletable);
 		}
 
-		Vector<SiteInfo> siteinfos = gdd.getSiteInfo();
+		Vector<SiteMeta> siteinfos = gdd.getSiteInfo();
 		this.gddReturnResult.siteInfoName = new Vector();
 		this.gddReturnResult.siteInfoName.add("siteName");
 		this.gddReturnResult.siteInfoName.add("IP");
@@ -93,7 +93,7 @@ public class GDDExecute {
 		this.gddReturnResult.siteInfoName.add("SiteFragemtation");
 		for (int i = 0; i < siteinfos.size(); i++) {
 			Vector<String> singlesite = new Vector<String>();
-			SiteInfo siteinfo = siteinfos.elementAt(i);
+			SiteMeta siteinfo = siteinfos.elementAt(i);
 			singlesite.add(siteinfo.getSiteName());
 
 			singlesite.add(siteinfo.getSiteIP());

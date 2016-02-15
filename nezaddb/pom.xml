@@ -35,11 +35,6 @@
 			<version>4.4</version>
 		</dependency>
 		<dependency>
-			<groupId>org.culturegraph</groupId>
-			<artifactId>metafacture-sql</artifactId>
-			<version>3.0.1-SNAPSHOT</version>
-		</dependency>
-		<dependency>
 			<groupId>com.github.jinahya</groupId>
 			<artifactId>database-metadata-bind</artifactId>
 			<version>1.0.2</version>

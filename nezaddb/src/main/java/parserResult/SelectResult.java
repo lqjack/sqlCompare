@@ -18,12 +18,10 @@ public class SelectResult extends ParseResult{
 	}
 	@Override
 	public void accept(ParseResultVisitor visitor) {
-		// TODO Auto-generated method stub
 		visitor.visit(this);
 	}
 	@Override
 	public void displayResult() {
-		// TODO Auto-generated method stub
 		System.out.println("Select parse result:");
 		selectTree.displayTree();
 	}

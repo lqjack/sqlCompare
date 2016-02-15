@@ -12,8 +12,8 @@ import executeReturnResult.CreateTableReturnResult;
 import gdd.ColumnInfo;
 import gdd.FragmentationInfo;
 import gdd.GDD;
-import gdd.SiteInfo;
-import gdd.TableInfo;
+import gdd.SiteMeta;
+import gdd.TableMeta;
 import globalDefinition.CONSTANT;
 import parserResult.AllocateResult;
 import parserResult.ParseResult;
@@ -41,7 +41,7 @@ public class AllocateExecute extends ExecuteSQL{
 		int i,j;
 		for(i = 0 ; i < siteTableMap.size() ; i++){
 			AllocateResult.SiteTableMap siteTable = siteTableMap.get(i);
-			SiteInfo siteinfo = gdd.getSiteInfo(siteTable.siteName);
+			SiteMeta siteinfo = gdd.getSiteInfo(siteTable.siteName);
 			if(siteinfo == null){
 				System.out.println("site "+siteTable.siteName+" is not exist!");
 				return;
@@ -77,7 +77,7 @@ public class AllocateExecute extends ExecuteSQL{
 			AllocateResult.SiteTableMap siteTable = siteTableMap.get(i);
 			CreateTableExecuteResult createResult = genInitResult(siteTable);
 			//createResult.displayResult();
-			SiteInfo siteinfo = gdd.getSiteInfo(siteTable.siteName);
+			SiteMeta siteinfo = gdd.getSiteInfo(siteTable.siteName);
 			ClientBase client = new ClientBase(siteinfo.getSiteIP(), siteinfo.getSitePort());
 	        System.out.println("create table client create success ");
 			Object result = client.sendContext("createtable", createResult);
@@ -109,7 +109,7 @@ public class AllocateExecute extends ExecuteSQL{
 		for(i = 0 ; i < siteTable.tables.size() ; i++){
 				String createTableSql = null;
 				String fragName = siteTable.tables.get(i).toString();
-				TableInfo tableinfo = gdd.getTableInfoFromFragName(fragName);
+				TableMeta tableinfo = gdd.getTableInfoFromFragName(fragName);
 				FragmentationInfo fraginfo = gdd.getFragmentation(fragName);
 				
 				if(fraginfo.getFragType() == CONSTANT.FRAG_HORIZONTAL){

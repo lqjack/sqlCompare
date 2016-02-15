@@ -6,7 +6,7 @@ import java.util.Vector;
 import gdd.FragmentationCondition;
 import gdd.FragmentationInfo;
 import gdd.GDD;
-import gdd.TableInfo;
+import gdd.TableMeta;
 import globalDefinition.CONSTANT;
 import globalDefinition.SimpleExpression;
 import parserResult.HFragmentResult;
@@ -31,7 +31,7 @@ public class HFragmentExecute extends ExecuteSQL {
 			System.exit(-1);
 		}
 		
-		TableInfo tableInfo = gdd.getTableInfo(tableName);
+		TableMeta tableInfo = gdd.getTableInfo(tableName);
 		List subTable = fragmentResult.getSubTableList();
 		List<List> conditions = fragmentResult.getConditions();
 		List<HFragmentResult.HFragmentUnit> expressions = fragmentResult.getHFragmentMap();

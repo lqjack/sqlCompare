@@ -17,8 +17,8 @@ import executeResult.DeleteExecuteResult;
 import gdd.ColumnInfo;
 import gdd.FragmentationInfo;
 import gdd.GDD;
-import gdd.SiteInfo;
-import gdd.TableInfo;
+import gdd.SiteMeta;
+import gdd.TableMeta;
 import globalDefinition.CONSTANT;
 import globalDefinition.ExpressionJudger;
 import globalDefinition.SimpleExpression;
@@ -35,7 +35,7 @@ public class DeleteRecordExecute {
 	
 	public int DeleteRecord() throws Exception {
 		String tableName = deleteResult.getTableName();
-		TableInfo tableinfo  = gdd.getTableInfo(tableName);
+		TableMeta tableinfo  = gdd.getTableInfo(tableName);
 		
 		if(tableinfo.getFragType() != CONSTANT.FRAG_VERTICAL)
 			return -1;
@@ -57,7 +57,7 @@ public class DeleteRecordExecute {
 		for(i = 1 ; i < fragmentations.size(); i++){
 			FragmentationInfo fragInfo = fragmentations.elementAt(i);
 			String siteName = fragInfo.getFragSiteName();
-			SiteInfo siteinfo = gdd.getSiteInfo(siteName);
+			SiteMeta siteinfo = gdd.getSiteInfo(siteName);
 			String sql = "select * from " + fragInfo.getFragName();
 			GetAllTableResult getAllTableResult = new GetAllTableResult(fragInfo.getFragName(),sql);
 			ClientBase client = new ClientBase(siteinfo.getSiteIP(), siteinfo.getSitePort());
@@ -84,7 +84,7 @@ public class DeleteRecordExecute {
 		for(i = 1 ; i < fragmentations.size(); i++){
 			FragmentationInfo fragInfo = fragmentations.elementAt(i);
 			String siteName = fragInfo.getFragSiteName();
-			SiteInfo siteinfo = gdd.getSiteInfo(siteName);
+			SiteMeta siteinfo = gdd.getSiteInfo(siteName);
 			
 			DeleteBatchResult deleteBatchResult =  new DeleteBatchResult();
 			String sql;

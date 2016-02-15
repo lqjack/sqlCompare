@@ -12,7 +12,7 @@ import executeReturnResult.ExecuteReturnResult;
 import executeReturnResult.GDDReturnResult;
 import executeReturnResult.TestSiteExecuteReturn;
 import gdd.GDD;
-import gdd.SiteInfo;
+import gdd.SiteMeta;
 import configuration.*;
 
 public class ControlServer extends ServerBase {
@@ -45,9 +45,9 @@ public class ControlServer extends ServerBase {
 class TestSiteHandler implements HttpHandler {
     public void handle(HttpExchange t) throws IOException {
         TestSiteExecuteReturn result = new TestSiteExecuteReturn();
-        Vector<SiteInfo> sites = GDD.getInstance().getSiteInfo();
+        Vector<SiteMeta> sites = GDD.getInstance().getSiteInfo();
         for (int i = 0; i < sites.size(); i++) {
-            SiteInfo site = sites.get(i);
+            SiteMeta site = sites.get(i);
             try {
                 ClientBase client = new ClientBase(site.getSiteIP(), site.getSitePort());
                 String msg = (String)client.sendContext("test", "");
@@ -73,9 +73,9 @@ class TestSiteHandler implements HttpHandler {
 }
 class ResetHandler implements HttpHandler {
     public void handle(HttpExchange t) throws IOException {
-        Vector<SiteInfo> sites = GDD.getInstance().getSiteInfo();
+        Vector<SiteMeta> sites = GDD.getInstance().getSiteInfo();
         for (int i = 0; i < sites.size(); i++) {
-            SiteInfo site = sites.get(i);
+            SiteMeta site = sites.get(i);
             try {
                 ClientBase client = new ClientBase(site.getSiteIP(), site.getSitePort());
                 client.sendContext("cleardb", "");
