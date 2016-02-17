@@ -1,0 +1,10 @@
+setsite site1 on 192.168.1.102:7000,site2 on 192.168.1.102:9000,site3 on 192.168.1.104:9000,site4 on 192.168.1.103:9000
+create table Publisher(id int key,name char(100),nation char(3))
+create table Book (id INT key, title CHAR(100), authors char(200), publisher_id int, copies int)
+create table Customer(id int key,name char(25),rank int)
+create table Orders(customer_id int,book_id int,quantity int)
+horizontal fragment on Publisher set (id<104000 and nation='PRC') as Publisher1,(id<104000 and nation = 'USA') as Publisher2,(id>=104000 and nation='PRC') as Publisher3,(id>=104000 and nation='USA') as Publisher4
+horizontal fragment on Book set (id<205000) as Book1,(id>=205000 and id<210000) as Book2,(id>=210000) as Book3
+vertical fragment on Customer set (id,name) as Customer1,(id,rank) as Customer2
+horizontal fragment on Orders set (customer_id<307000 and book_id<215000) as Orders1,(customer_id<307000 and book_id>=215000) as Orders2,(customer_id>=307000 AND book_id<215000) as Orders3,(customer_id>=307000 AND book_id>=215000) as Orders4
+allocate (Publisher1,Book1,Customer1,Orders1) on site1, (Publisher2,Book2,Customer2,Orders2) on site2,(Publisher3,Book3,Orders3) on site3,(Publisher4,Orders4) on site4
