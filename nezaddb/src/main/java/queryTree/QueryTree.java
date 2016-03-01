@@ -26,142 +26,154 @@ public class QueryTree {
 	private int treeType;
 	private int classID;
 	private String sql;
-	public QueryTree(){
+
+	public QueryTree() {
 		setNodeID(0);
 		setTreeType(0);
 		setClassID(0);
 	}
-	public TreeNode getRoot(){
+
+	public TreeNode getRoot() {
 		return root;
 	}
-	public void setRoot(TreeNode r){
+
+	public void setRoot(TreeNode r) {
 		root = r;
 	}
-	public boolean isValidTree(){
+
+	public boolean isValidTree() {
 		return !(root == null);
 	}
-	public void displayTree(){
-		recDisplayTree(root,0,0);
+
+	public void displayTree() {
+		recDisplayTree(root, 0, 0);
 	}
-	private void recDisplayTree(TreeNode thisNode, int level, int childNumber){
-		System.out.print("level="+level+" child="+childNumber+": ");
+
+	private void recDisplayTree(TreeNode thisNode, int level, int childNumber) {
+		System.out.print("level=" + level + " child=" + childNumber + ": ");
 		System.out.print(thisNode.getContent());
-		System.out.println(" siteID="+thisNode.getSiteID()+" nodeID="+thisNode.getNodeID()+" classId="+thisNode.getClassID());
+		System.out.println(" siteID=" + thisNode.getSiteID() + " nodeID=" + thisNode.getNodeID() + " classId="
+				+ thisNode.getClassID());
 		int childNum = thisNode.getChildCount();
-		for(int i=0; i<childNum; ++i){
+		for (int i = 0; i < childNum; ++i) {
 			TreeNode nextNode = thisNode.getChildList().get(i);
-			if(nextNode != null){
-				recDisplayTree(nextNode,level+1,i);
-			}
-			else
+			if (nextNode != null) {
+				recDisplayTree(nextNode, level + 1, i);
+			} else
 				return;
 		}
 	}
-	public int getClassficationSize(){
+
+	public int getClassficationSize() {
 		return this.classID;
 	}
+
 	public void setNodeList(List<FormattedTreeNode> nodeList) {
 		this.nodeList = nodeList;
 	}
+
 	public List<FormattedTreeNode> getNodeList() {
 		return nodeList;
 	}
-	public void genTreeList(){
-		if (root == null) return;
+
+	public void genTreeList() {
+		if (root == null)
+			return;
 		nodeList = new ArrayList<FormattedTreeNode>();
 		genTreeListByNode(root);
 	}
-	private void genTreeListByNode(TreeNode node){
+
+	private void genTreeListByNode(TreeNode node) {
 		FormattedTreeNode n = new FormattedTreeNode();
 		n.content = node.getContent();
 		n.nodeID = node.getNodeID();
-		n.parentNodeID = ((node.getParent() == null)?-1:node.getParent().getNodeID());
+		n.parentNodeID = ((node.getParent() == null) ? -1 : node.getParent().getNodeID());
 		n.siteID = node.getSiteID();
 		nodeList.add(n);
 		if (node.isLeaf())
 			return;
-		for(int i=0;i<node.getChildCount();++i){
+		for (int i = 0; i < node.getChildCount(); ++i) {
 			genTreeListByNode(node.getChild(i));
 		}
 	}
+
 	public void setNodeID(int nodeID) {
 		this.nodeID = nodeID;
 	}
+
 	public int getNodeID() {
 		return nodeID;
 	}
+
 	public void setTreeType(int treeType) {
 		this.treeType = treeType;
 	}
+
 	public int getTreeType() {
 		return treeType;
 	}
-	public void genSelectTree(Select select){
+
+	public void genSelectTree(Select select) {
 		this.treeType = CONSTANT.TREE_SELECT;
-		
+
 		/*------from clause----*/
-		ArrayList<LeafNode> leafs = new ArrayList<LeafNode>();
-		TableNamesFinder finder = new TableNamesFinder();
-		ArrayList<String> tableList = (ArrayList<String>) finder.getTableList(select);
-		for (int i=0;i<tableList.size();++i){
-			LeafNode node1 = new LeafNode();
-			node1.setNodeName(tableList.get(i));
-			node1.setTableName(tableList.get(i));
-			node1.setSegment(false);
-			node1.setNodeID(this.nodeID);
+		List<LeafNode> leafs = new ArrayList<LeafNode>();
+		TableNamesFinder tableNameFinder = new TableNamesFinder();
+		List<String> tableList = tableNameFinder.getTableList(select);
+		for (String tname : tableList) {
+			LeafNode leafNode = new LeafNode();
+			leafNode.setNodeName(tname);
+			leafNode.setTableName(tname);
+			leafNode.setSegment(false);
+			leafNode.setNodeID(this.nodeID);
 			this.nodeID++;
-			leafs.add(node1);
+			leafs.add(leafNode);
 		}
-		
-		
+
 		/*------select clause----*/
-		SelectItemsFinder finder2 = new SelectItemsFinder();
-		ArrayList<String> projectionItemsList = finder2.getSelectItemsList(select);
-		String attributes = new String();
+		SelectItemsFinder selectItemFinder = new SelectItemsFinder();
+		List<String> projectionItemsList = selectItemFinder.getSelectItemsList(select);
+		String attributes = null;
 		TreeNode curNode = null;
-		for (int i=0;i<projectionItemsList.size();i++){
+		for (int i = 0; i < projectionItemsList.size(); i++) {
 			ProjectionNode node = new ProjectionNode();
 			node.setNodeName("Projection");
-			attributes += projectionItemsList.get(i)+((i<projectionItemsList.size())?",":"");
+			attributes += projectionItemsList.get(i) + ((i < projectionItemsList.size()) ? "," : "");
 			int pos = projectionItemsList.get(i).indexOf(".");
-			if(pos == -1){
-				if(tableList.size() == 1)
+			if (pos == -1) {
+				if (tableList.size() == 1)
 					node.addTableName(tableList.get(0));
 				else
 					node.addTableName("null");
 				node.addAttribute(projectionItemsList.get(i));
-			}
-			else{
-				String tableName = projectionItemsList.get(i).substring(0,pos);
-				String attrName = projectionItemsList.get(i).substring(pos+1);
+			} else {
+				String tableName = projectionItemsList.get(i).substring(0, pos);
+				String attrName = projectionItemsList.get(i).substring(pos + 1);
 				node.addTableName(tableName);
 				node.addAttribute(attrName);
 			}
-			if(i==0){
+			if (i == 0) {
 				node.setRoot();
 				node.setParent(null);
 				node.setNodeID(this.nodeID);
 				this.nodeID++;
 				root = node;
 				curNode = root;
-			}
-			else{
+			} else {
 				node.setParent(curNode);
 				node.setNodeID(this.nodeID);
 				this.nodeID++;
 				curNode = node;
 			}
-			
+
 		}
-		
-		
-		
+
 		/*------where clause----*/
-		WhereItemsFinder finder3 = new WhereItemsFinder(select);
+		WhereItemsFinder whereItemFinder = new WhereItemsFinder(select);
 		/*------join clause----*/
-		ArrayList<JoinNode> joins = new ArrayList<JoinNode>();
-		ArrayList<JoinExpression> joinList = finder3.getJionList();
-		for(int i=0;i<joinList.size();++i){
+		List<JoinNode> joins = new ArrayList<JoinNode>();
+		List<JoinExpression> joinList = whereItemFinder.getJionList();
+		for (int i = 0; i < joinList.size(); ++i) {
 			JoinNode node2 = new JoinNode();
 			node2.setLeftTableName(joinList.get(i).leftTableName);
 			node2.setRightTableName(joinList.get(i).rightTableName);
@@ -170,70 +182,71 @@ public class QueryTree {
 			node2.setNodeID(this.nodeID);
 			this.nodeID++;
 			joins.add(node2);
-			
+
 		}
-		
-		/*-------selection clause-------*/	
-		
+
+		/*-------selection clause-------*/
+
 		ArrayList<SelectionNode> selections = new ArrayList<SelectionNode>();
-		ArrayList<SimpleExpression> selectionList = finder3.getSelectionList();
-		for(int i=0;i<selectionList.size();++i){
+		ArrayList<SimpleExpression> selectionList = whereItemFinder.getSelectionList();
+		for (int i = 0; i < selectionList.size(); ++i) {
 			SelectionNode node3 = new SelectionNode();
 			node3.setNodeName("Selection");
 			node3.addConditon(selectionList.get(i));
 			node3.setNodeID(this.nodeID);
-			if(!selectionList.get(i).tableName.equalsIgnoreCase("null"))
+			if (!selectionList.get(i).tableName.equalsIgnoreCase("null"))
 				node3.setTableName(selectionList.get(i).tableName);
-			else{
-				if(tableList.size() == 1){
+			else {
+				if (tableList.size() == 1) {
 					node3.setTableName(tableList.get(0));
 					node3.getCondList().get(0).tableName = tableList.get(0);
-				}
-				else
+				} else
 					node3.setTableName("null");
 				node3.displayNode();
 			}
 			this.nodeID++;
 			selections.add(node3);
 		}
-	
-		//WhereClauseDecomposition p = new WhereClauseDecomposition(select);
-		for(int i=0;i<joins.size();++i){
+
+		// WhereClauseDecomposition p = new WhereClauseDecomposition(select);
+		for (int i = 0; i < joins.size(); ++i) {
 			JoinNode jnode = joins.get(i);
-			TreeNode leftChild = findLeafNode(jnode.getLeftTableName(),leafs);
-			TreeNode rightChild = findLeafNode(jnode.getRightTableName(),leafs);
-			while(leftChild.getParent()!= null) leftChild = leftChild.getParent();
-			while(rightChild.getParent()!=null) rightChild = rightChild.getParent();
+			TreeNode leftChild = findLeafNode(jnode.getLeftTableName(), leafs);
+			TreeNode rightChild = findLeafNode(jnode.getRightTableName(), leafs);
+			while (leftChild.getParent() != null)
+				leftChild = leftChild.getParent();
+			while (rightChild.getParent() != null)
+				rightChild = rightChild.getParent();
 			leftChild.setParent(jnode);
 			rightChild.setParent(jnode);
 		}
-		for(int i=0;i<selections.size();++i){
+		for (int i = 0; i < selections.size(); ++i) {
 			SelectionNode snode = selections.get(i);
 			TreeNode child = findLeafNode(snode.getTableName(), leafs);
-			while (child.getParent()!=null) child = child.getParent();
-			child.setParent(snode);
+			while (child != null && child.getParent() != null) {
+				child = child.getParent();
+				child.setParent(snode);
+			}
 		}
 		TreeNode leaf1 = leafs.get(0);
-		while(leaf1.getParent()!= null) leaf1 = leaf1.getParent();
+		while (leaf1.getParent() != null)
+			leaf1 = leaf1.getParent();
 		leaf1.setParent(curNode);
-		
-	
+
 		/*
-		for(int i = 0;i<leafs.size();++i)
-		{
-			localization(leafs.get(i));
-		}
-		
-		setSiteIDOnNodes();
-		*/
+		 * for(int i = 0;i<leafs.size();++i) { localization(leafs.get(i)); }
+		 * 
+		 * setSiteIDOnNodes();
+		 */
 	}
-	public void genDeleteTree(Delete delete){
+
+	public void genDeleteTree(Delete delete) {
 		this.setTreeType(CONSTANT.TREE_DELETE);
 		System.out.println(delete.toString());
 		SelectionNode sel = new SelectionNode();
 		WhereItemsFinder finder = new WhereItemsFinder(delete);
 		ArrayList<SimpleExpression> selectionList = finder.getSelectionList();
-		for(int i=0;i<selectionList.size();++i){
+		for (int i = 0; i < selectionList.size(); ++i) {
 			selectionList.get(i).tableName = delete.getTable().getName();
 			sel.addConditon(selectionList.get(i));
 		}
@@ -244,8 +257,7 @@ public class QueryTree {
 		sel.setNodeID(nodeID);
 		nodeID++;
 		root = sel;
-		
-		
+
 		LeafNode leaf = new LeafNode();
 		leaf.setNodeName(delete.getTable().getName());
 		leaf.setTableName(delete.getTable().getName());
@@ -253,34 +265,33 @@ public class QueryTree {
 		leaf.setNodeID(nodeID);
 		nodeID++;
 		leaf.setParent(sel);
-		
-		
-		//localization(leaf);
-		//setSiteIDOnNodes();
-}
-	
-	public void genInsertTree(Insert insert){
+
+		// localization(leaf);
+		// setSiteIDOnNodes();
+	}
+
+	public void genInsertTree(Insert insert) {
 		this.setTreeType(CONSTANT.TREE_INSERT);
 		System.out.println(insert.getTable().getName());
 		System.out.println(insert.getColumns().toString());
 		System.out.println(insert.getItemsList().toString());
-		ExpressionList itemList = (ExpressionList)insert.getItemsList();
+		ExpressionList itemList = (ExpressionList) insert.getItemsList();
 		SelectionNode node = new SelectionNode();
-		for(int i=0;i<insert.getColumns().size();++i){
+		for (int i = 0; i < insert.getColumns().size(); ++i) {
 			SimpleExpression e = new SimpleExpression();
 			e.tableName = insert.getTable().getName();
 			e.columnName = insert.getColumns().get(i).toString();
 			e.op = "=";
 			String value = itemList.getExpressions().get(i).toString();
-			if(value.startsWith("\"")||value.startsWith("'")) value = value.substring(1,value.length()-1);
+			if (value.startsWith("\"") || value.startsWith("'"))
+				value = value.substring(1, value.length() - 1);
 			e.value = value;
-			if( itemList.getExpressions().get(i) instanceof LongValue){
+			if (itemList.getExpressions().get(i) instanceof LongValue) {
 				e.valueType = CONSTANT.VALUE_INT;
-			}
-			else if( itemList.getExpressions().get(i) instanceof DoubleValue){
+			} else if (itemList.getExpressions().get(i) instanceof DoubleValue) {
 				e.valueType = CONSTANT.VALUE_DOUBLE;
 			}
-			if( itemList.getExpressions().get(i) instanceof StringValue){
+			if (itemList.getExpressions().get(i) instanceof StringValue) {
 				e.valueType = CONSTANT.VALUE_STRING;
 			}
 			node.addConditon(e);
@@ -291,7 +302,7 @@ public class QueryTree {
 		node.setNodeID(nodeID);
 		nodeID++;
 		root = node;
-		
+
 		LeafNode leaf = new LeafNode();
 		leaf.setNodeName(insert.getTable().getName());
 		leaf.setTableName(insert.getTable().getName());
@@ -299,22 +310,24 @@ public class QueryTree {
 		leaf.setNodeID(nodeID);
 		nodeID++;
 		leaf.setParent(node);
-		
-		
-		//localization(leaf);
-		//setSiteIDOnNodes();
+
+		// localization(leaf);
+		// setSiteIDOnNodes();
 	}
-	
-	private LeafNode findLeafNode(String tableName,ArrayList<LeafNode> leafs){
-		if (leafs.size() == 0) return null;
-		for(int i=0;i<leafs.size();++i){
-			if(leafs.get(i).getTableName().equalsIgnoreCase(tableName))
+
+	private LeafNode findLeafNode(String tableName, List<LeafNode> leafs) {
+		if (leafs.size() == 0)
+			return null;
+		for (int i = 0; i < leafs.size(); ++i) {
+			if (leafs.get(i).getTableName().equalsIgnoreCase(tableName))
 				return leafs.get(i);
 		}
 		return null;
 	}
-	private void localization(LeafNode leafNode){
-		if(leafNode.hasSegmented()) return;
+
+	private void localization(LeafNode leafNode) {
+		if (leafNode.hasSegmented())
+			return;
 		UnionNode unionNode = new UnionNode();
 		unionNode.setParent(leafNode.getParent());
 		leafNode.getParent().removeChildNode(leafNode);
@@ -322,8 +335,8 @@ public class QueryTree {
 		unionNode.setNodeID(leafNode.getNodeID());
 		String tableName = leafNode.getTableName();
 		GDD gdd = GDD.getInstance();
-		List<String> subTableList = (List<String>)gdd.getTableFragList(tableName);
-		for(int i=0;i<subTableList.size();++i){
+		List<String> subTableList = (List<String>) gdd.getTableFragList(tableName);
+		for (int i = 0; i < subTableList.size(); ++i) {
 			int siteID = gdd.getSiteNumberofFragmentation(subTableList.get(i));
 			LeafNode node = new LeafNode();
 			node.setTableName(subTableList.get(i));
@@ -334,49 +347,60 @@ public class QueryTree {
 			this.nodeID++;
 			node.setParent(unionNode);
 		}
-			
+
 	}
-	private void setSiteIDOnNodes(){
-		if( this.root == null) return;
+
+	private void setSiteIDOnNodes() {
+		if (this.root == null)
+			return;
 		setSiteIDOnNodesByChild(root);
 	}
-	private int setSiteIDOnNodesByChild(TreeNode node){
-		if(node.isLeaf()) return node.getSiteID();
+
+	private int setSiteIDOnNodesByChild(TreeNode node) {
+		if (node.isLeaf())
+			return node.getSiteID();
 		List<TreeNode> childList = node.getChildList();
-		for(int i=0;i<childList.size();++i)
-		{
+		for (int i = 0; i < childList.size(); ++i) {
 			setSiteIDOnNodesByChild(childList.get(i));
 		}
 		node.setSiteID(setSiteIDOnNodesByChild(node.getChild(0)));
 		return node.getSiteID();
 	}
+
 	public void setLeafNodeList(List<LeafNode> leafNodeList) {
 		this.leafNodeList = leafNodeList;
 	}
+
 	public List<LeafNode> getLeafNodeList() {
-		if (this.root == null) return null;
+		if (this.root == null)
+			return null;
 		leafNodeList = new ArrayList<LeafNode>();
 		getLeafNodeList(root);
 		return leafNodeList;
 	}
-	private void getLeafNodeList(TreeNode node){
-		if(node.isLeaf()){ 
-			leafNodeList.add((LeafNode)node);
+
+	private void getLeafNodeList(TreeNode node) {
+		if (node.isLeaf()) {
+			leafNodeList.add((LeafNode) node);
 			return;
 		}
-		for(int i=0;i<node.getChildCount();++i){
+		for (int i = 0; i < node.getChildCount(); ++i) {
 			getLeafNodeList(node.getChild(i));
 		}
 	}
+
 	public void setSql(String sql) {
 		this.sql = sql;
 	}
+
 	public String getSql() {
 		return sql;
 	}
+
 	public void setClassID(int classID) {
 		this.classID = classID;
 	}
+
 	public int getClassID() {
 		return classID;
 	}

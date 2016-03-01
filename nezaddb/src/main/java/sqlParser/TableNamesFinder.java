@@ -10,8 +10,8 @@ import net.sf.jsqlparser.expression.operators.relational.*;
 
 
 public class TableNamesFinder implements SelectVisitor, FromItemVisitor,ExpressionVisitor, ItemsListVisitor{
-	private ArrayList<String> tables;
-	public ArrayList<String> getTableList(Select select) {
+	private List<String> tables;
+	public List<String> getTableList(Select select) {
 		tables = new ArrayList<String>();
 		select.getSelectBody().accept(this);
 		return tables;

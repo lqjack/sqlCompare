@@ -1,4 +1,5 @@
 package sqlParser;
+
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
@@ -44,33 +45,35 @@ import queryTree.FormattedTreeNode;
 import queryTree.QueryTree;
 import queryTree.TreeOptimizer;
 
-
-public class SqlParser implements StatementVisitor{
+public class SqlParser implements StatementVisitor {
 	private ParseResult parseResult;
 	private String sql;
 	private boolean optimized = false;
-	public void setOptimizeOn(){
+
+	public void setOptimizeOn() {
 		optimized = true;
 	}
-	public void setOptimizeOff(){
+
+	public void setOptimizeOff() {
 		optimized = false;
 	}
-	public SqlParser(String sql,boolean isOptimizeOn){
+
+	public SqlParser(String sql, boolean isOptimizeOn) {
 		this.setSql(sql);
 		this.optimized = isOptimizeOn;
-		CCJSqlParserManager pm = new  CCJSqlParserManager();
-		try{
+		CCJSqlParserManager pm = new CCJSqlParserManager();
+		try {
 			Statement st = pm.parse(new StringReader(sql));
 			st.accept(this);
-		}catch(JSQLParserException e){
+		} catch (JSQLParserException e) {
 			parseResult = new ParseErrorResult("Syntax error");
-			//System.out.println();
 			e.printStackTrace();
 		}
 	}
+
 	@Override
 	public void visit(Select select) {
-		
+
 		System.out.println(select.toString());
 		QueryTree selectTree = new QueryTree();
 		selectTree.setTreeType(CONSTANT.TREE_SELECT);
@@ -78,22 +81,22 @@ public class SqlParser implements StatementVisitor{
 		selectTree.setSql(select.toString());
 		selectTree.displayTree();
 		parseResult = new SelectResult(selectTree);
-		
+
 		TreeOptimizer optimizer = new TreeOptimizer(selectTree);
 		optimizer.setTreeOptimize(optimized);
 		optimizer.queryTreeOptimize();
 		System.out.println("--------optimized query tree----------");
 		optimizer.getQueryTree().displayTree();
-		
-		//for display on web
+
+		// for display on web
 		selectTree.genTreeList();
 		List<FormattedTreeNode> nodeList = selectTree.getNodeList();
-		StringBuffer results =new StringBuffer("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
+		StringBuffer results = new StringBuffer("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
 		results.append("<nodes>");
-		for(int i=0;i<nodeList.size();++i)
-		{
+		for (int i = 0; i < nodeList.size(); ++i) {
 			FormattedTreeNode node = (FormattedTreeNode) nodeList.get(i);
-			//results += node.content+node.nodeID+node.parentNodeID+node.siteID;
+			// results +=
+			// node.content+node.nodeID+node.parentNodeID+node.siteID;
 			results.append("<node>");
 			results.append("<content>");
 			results.append(node.content);
@@ -110,17 +113,18 @@ public class SqlParser implements StatementVisitor{
 			results.append("</node>");
 		}
 		results.append("</nodes>");
-		try{
-			PrintWriter pw = new PrintWriter(new OutputStreamWriter(new FileOutputStream("d:\\treeInfo.xml")),true);   
-			pw.println(results.toString()); 
+		try {
+			PrintWriter pw = new PrintWriter(new OutputStreamWriter(new FileOutputStream("d:\\treeInfo.xml")), true);
+			pw.println(results.toString());
 			pw.flush();
 			pw.close();
-		}catch(Exception e){}
+		} catch (Exception e) {
+		}
 	}
 
 	@Override
 	public void visit(Delete delete) {
-		
+
 		System.out.println("delete st");
 		QueryTree deleteTree = new QueryTree();
 		deleteTree.genDeleteTree(delete);
@@ -129,27 +133,26 @@ public class SqlParser implements StatementVisitor{
 		deleteTree.displayTree();
 		TreeOptimizer optimizer = new TreeOptimizer(deleteTree);
 		optimizer.setTreeOptimize(optimized);
-		//optimizer.setTreeOptimize(true);
+		// optimizer.setTreeOptimize(true);
 		optimizer.queryTreeOptimize();
 		optimizer.getQueryTree().displayTree();
-		
-		//for display on web
+
+		// for display on web
 		deleteTree.genTreeList();
 		List<FormattedTreeNode> nodeList = deleteTree.getNodeList();
-		StringBuffer results =new StringBuffer("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
+		StringBuffer results = new StringBuffer("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
 		results.append("<nodes>");
-		for(int i=0;i<nodeList.size();++i)
-		{
+		for (int i = 0; i < nodeList.size(); ++i) {
 			FormattedTreeNode node = (FormattedTreeNode) nodeList.get(i);
-			//results += node.content+node.nodeID+node.parentNodeID+node.siteID;
+			// results +=
+			// node.content+node.nodeID+node.parentNodeID+node.siteID;
 			results.append("<node>");
 			results.append("<content>");
-			if(node.content.startsWith("Selection")){
+			if (node.content.startsWith("Selection")) {
 				String content = node.content.substring(9);
-				content ="Delete"+content;
+				content = "Delete" + content;
 				results.append(content);
-			}
-			else
+			} else
 				results.append(node.content);
 			results.append("</content>");
 			results.append("<nodeid>");
@@ -164,24 +167,25 @@ public class SqlParser implements StatementVisitor{
 			results.append("</node>");
 		}
 		results.append("</nodes>");
-		try{
-			PrintWriter pw = new PrintWriter(new OutputStreamWriter(new FileOutputStream("d:\\treeInfo.xml")),true);   
-			pw.println(results.toString()); 
+		try {
+			PrintWriter pw = new PrintWriter(new OutputStreamWriter(new FileOutputStream("d:\\treeInfo.xml")), true);
+			pw.println(results.toString());
 			pw.flush();
 			pw.close();
-		}catch(Exception e){}
+		} catch (Exception e) {
+		}
 	}
 
 	@Override
 	public void visit(Update update) {
-		
+
 		System.out.println("command 'UPDATE' is not supported!");
-		
+
 	}
 
 	@Override
 	public void visit(Insert insert) {
-		
+
 		System.out.println("insert st");
 		QueryTree insertTree = new QueryTree();
 		insertTree.genInsertTree(insert);
@@ -192,27 +196,23 @@ public class SqlParser implements StatementVisitor{
 		optimizer.setTreeOptimize(optimized);
 		optimizer.queryTreeOptimize();
 		optimizer.getQueryTree().displayTree();
-		
-		
-		
-		
-		//for queryTree display on web
+
+		// for queryTree display on web
 		insertTree.genTreeList();
 		List<FormattedTreeNode> nodeList = insertTree.getNodeList();
-		StringBuffer results =new StringBuffer("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
+		StringBuffer results = new StringBuffer("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
 		results.append("<nodes>");
-		for(int i=0;i<nodeList.size();++i)
-		{
+		for (int i = 0; i < nodeList.size(); ++i) {
 			FormattedTreeNode node = (FormattedTreeNode) nodeList.get(i);
-			//results += node.content+node.nodeID+node.parentNodeID+node.siteID;
+			// results +=
+			// node.content+node.nodeID+node.parentNodeID+node.siteID;
 			results.append("<node>");
 			results.append("<content>");
-			if(node.content.startsWith("Selection")){
+			if (node.content.startsWith("Selection")) {
 				String content = node.content.substring(9);
-				content ="Insert"+content;
+				content = "Insert" + content;
 				results.append(content);
-			}
-			else
+			} else
 				results.append(node.content);
 			results.append("</content>");
 			results.append("<nodeid>");
@@ -227,106 +227,114 @@ public class SqlParser implements StatementVisitor{
 			results.append("</node>");
 		}
 		results.append("</nodes>");
-		try{
-			PrintWriter pw = new PrintWriter(new OutputStreamWriter(new FileOutputStream("d:\\treeInfo.xml")),true);   
-			pw.println(results.toString()); 
+		try {
+			PrintWriter pw = new PrintWriter(new OutputStreamWriter(new FileOutputStream("d:\\treeInfo.xml")), true);
+			pw.println(results.toString());
 			pw.flush();
 			pw.close();
-		}catch(Exception e){}
+		} catch (Exception e) {
+		}
 	}
 
 	@Override
 	public void visit(Replace replace) {
-		
+
 		System.out.println("command 'RELPACE' is not supported!");
 	}
 
 	@Override
 	public void visit(Drop drop) {
-		
+
 		System.out.println("command 'DROP' is not supported!");
 	}
 
 	@Override
 	public void visit(Truncate truncate) {
-		
+
 		System.out.println("command 'TRUNCATE' is not supported!");
 	}
 
 	@Override
 	public void visit(CreateTable createTable) {
-		
+
 		System.out.println("create table parse successfully");
-		parseResult = new CreateTableResult(createTable.getTable().getName(),createTable.getColumnDefinitions(),createTable.getTableOptionsStrings(),createTable.getIndexes());
+		parseResult = new CreateTableResult(createTable.getTable().getName(), createTable.getColumnDefinitions(),
+				createTable.getTableOptionsStrings(), createTable.getIndexes());
 	}
 
 	@Override
 	public void visit(VerticalFragment fragment) {
-		
+
 		System.out.println("vertical fragment parse successfully!");
-		parseResult = new VFragmentResult(fragment.getTable().getName(), fragment.getSubTableList(),fragment.getColumns());
+		parseResult = new VFragmentResult(fragment.getTable().getName(), fragment.getSubTableList(),
+				fragment.getColumns());
 	}
 
 	@Override
 	public void visit(HorizontalFragment fragment) {
-		
+
 		System.out.println("horizontal fragment parse successfully!");
-		parseResult =  new HFragmentResult(fragment.getTable().getName(),fragment.getSubTableList(),fragment.getConditions());
+		parseResult = new HFragmentResult(fragment.getTable().getName(), fragment.getSubTableList(),
+				fragment.getConditions());
 	}
 
 	@Override
 	public void visit(Allocate allocate) {
-		
+
 		System.out.println("allocate parse successfully!");
-		parseResult = new AllocateResult(allocate.getSiteList(),allocate.getTableList());
+		parseResult = new AllocateResult(allocate.getSiteList(), allocate.getTableList());
 	}
 
 	@Override
 	public void visit(ImportData importdata) {
-		
+
 		System.out.println("importdata parse successfully!");
 		parseResult = new ImportDataResult(importdata.getFileList());
-		
+
 	}
 
 	@Override
 	public void visit(SetSite setSite) {
-		
+
 		System.out.println("setsite parse successfully!");
-		parseResult = new SetSiteResult(setSite.getSiteNameList(),setSite.getIpList(),setSite.getPortList());
+		parseResult = new SetSiteResult(setSite.getSiteNameList(), setSite.getIpList(), setSite.getPortList());
 	}
-	
+
 	@Override
 	public void visit(CreateDatabase createDatabase) {
-		
+
 		System.out.println("createdb parse successfully!");
 		parseResult = new CreateDatabaseResult(createDatabase.getDatabaseName());
-		
+
 	}
-	
+
 	@Override
 	public void visit(UseDatabase useDatabase) {
-		
+
 		System.out.println("usedb parse successfully!");
 		parseResult = new UseDatabaseResult(useDatabase.getDatabaseName());
-		
+
 	}
-	
+
 	@Override
 	public void visit(Init init) {
-		
+
 		System.out.println("init parse successfully!");
 		parseResult = new InitResult(init.getFileName());
 	}
+
 	public void setResult(ParseResult result) {
 		this.parseResult = result;
 	}
+
 	public ParseResult getResult() {
 		return parseResult;
 	}
+
 	public void setSql(String sql) {
 		this.sql = sql;
 	}
+
 	public String getSql() {
 		return sql;
 	}

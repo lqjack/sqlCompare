@@ -30,7 +30,20 @@ import net.sf.jsqlparser.statement.StatementVisitor;
 
 public class Select implements Statement {
 	private SelectBody selectBody;
-	private List withItemsList;
+	private List<?> withItemsList;
+	
+	Statement statement;
+	
+	public Select(Statement statement){
+		this.statement = statement;
+	}
+	
+	public Select() {
+	}
+
+	public void visit(){
+		//TODO
+	}
 	
 	public void accept(StatementVisitor statementVisitor) {
 		statementVisitor.visit(this);

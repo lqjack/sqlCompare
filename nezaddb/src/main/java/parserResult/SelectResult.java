@@ -10,10 +10,10 @@ public class SelectResult extends ParseResult{
 	public SelectResult(QueryTree tree){
 		selectTree = tree;
 	}
-	public void setTableNames(List tableNames) {
+	public void setTableNames(List<?> tableNames) {
 		this.tableNames = tableNames;
 	}
-	public List getTableNames() {
+	public List<?> getTableNames() {
 		return tableNames;
 	}
 	@Override

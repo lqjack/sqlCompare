@@ -1,19 +1,33 @@
 package communication;
 
-import java.io.*;
-import java.util.Set;
-import java.util.Vector;
-
-import com.sun.net.httpserver.*;
-
 import execute.Execute;
 import execute.GDDExecute;
 import executeReturnResult.ExecuteReturnResult;
 import executeReturnResult.GDDReturnResult;
 import executeReturnResult.TestSiteExecuteReturn;
 import gdd.GDD;
-import gdd.SiteMeta;
-import configuration.*;
+import gdd.SiteInfo;
+
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.util.Set;
+import java.util.Vector;
+
+import com.sun.net.httpserver.Headers;
+import com.sun.net.httpserver.HttpExchange;
+import com.sun.net.httpserver.HttpHandler;
+
+import configuration.Configuration;
 
 public class ControlServer extends ServerBase {
     private GDD gdd;
@@ -45,9 +59,9 @@ public class ControlServer extends ServerBase {
 class TestSiteHandler implements HttpHandler {
     public void handle(HttpExchange t) throws IOException {
         TestSiteExecuteReturn result = new TestSiteExecuteReturn();
-        Vector<SiteMeta> sites = GDD.getInstance().getSiteInfo();
+        Vector<SiteInfo> sites = GDD.getInstance().getSiteInfo();
         for (int i = 0; i < sites.size(); i++) {
-            SiteMeta site = sites.get(i);
+            SiteInfo site = sites.get(i);
             try {
                 ClientBase client = new ClientBase(site.getSiteIP(), site.getSitePort());
                 String msg = (String)client.sendContext("test", "");
@@ -73,9 +87,9 @@ class TestSiteHandler implements HttpHandler {
 }
 class ResetHandler implements HttpHandler {
     public void handle(HttpExchange t) throws IOException {
-        Vector<SiteMeta> sites = GDD.getInstance().getSiteInfo();
+        Vector<SiteInfo> sites = GDD.getInstance().getSiteInfo();
         for (int i = 0; i < sites.size(); i++) {
-            SiteMeta site = sites.get(i);
+            SiteInfo site = sites.get(i);
             try {
                 ClientBase client = new ClientBase(site.getSiteIP(), site.getSitePort());
                 client.sendContext("cleardb", "");

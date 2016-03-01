@@ -42,28 +42,17 @@ public class Execute implements ParseResultVisitor{
 	}
 	
 	public Execute(String driverClass,String url,String user,String password) throws SQLException, ReflectiveOperationException{
-//		gdd = GDD.getInstance(driverClass, url, user, password);
+		gdd = GDD.getInstance(driverClass, url, user, password);
 	}
 	
 	public void execute(String sql, boolean opt){
 	    try {
 	        SqlParser parser = new SqlParser(sql,opt);
 	        parser.getResult().accept(this);
-	        if (parser.getResult() instanceof SelectResult)
-	            return;
 	    } catch (Exception ex) {
 	        returnResult = new ErrorReturnResult("Parser : failed , you may check whether the table exist");
 	    }
-	    
-//TODO : should not send the data to site
-/*		try{
-			if(sendGDDFileToSites()){
-				System.out.println("transfer gdd file to all sites succeed!");
-			}
-		}catch(IOException e){
-			System.out.println(e.toString());
-		}
-*/	}
+	}
 	
 	public ExecuteReturnResult getParseTree(String sql, boolean opt) {
 	    ExecuteReturnResult result = null;
@@ -114,8 +103,6 @@ public class Execute implements ParseResultVisitor{
 		}
 		return true;
 	}
-	
-	
 	
 	@Override
 	public void visit(AllocateResult allocateResult) {

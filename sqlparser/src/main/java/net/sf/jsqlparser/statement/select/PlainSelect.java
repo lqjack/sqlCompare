@@ -19,7 +19,7 @@
  * library; if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330,
  * Boston, MA 02111-1307, USA.
  */
- 
+
 package net.sf.jsqlparser.statement.select;
 
 import java.util.List;
@@ -30,25 +30,24 @@ import net.sf.jsqlparser.schema.Table;
 /**
  */
 /**
- * The core of a "SELECT" statement (no UNION, no ORDER BY) 
+ * The core of a "SELECT" statement (no UNION, no ORDER BY)
  */
 public class PlainSelect implements SelectBody {
 	private Distinct distinct = null;
-	private List selectItems;
+	private List<?> selectItems;
 	private Table into;
 	private FromItem fromItem;
-	private List joins;
+	private List<?> joins;
 	private Expression where;
-	private List groupByColumnReferences;
-	private List orderByElements;
+	private List<?> groupByColumnReferences;
+	private List<?> orderByElements;
 	private Expression having;
 	private Limit limit;
 	private Top top;
-	
-
 
 	/**
 	 * The {@link FromItem} in this query
+	 * 
 	 * @return the {@link FromItem}
 	 */
 	public FromItem getFromItem() {
@@ -60,10 +59,12 @@ public class PlainSelect implements SelectBody {
 	}
 
 	/**
-	 * The {@link SelectItem}s in this query (for example the A,B,C in "SELECT A,B,C")
+	 * The {@link SelectItem}s in this query (for example the A,B,C in
+	 * "SELECT A,B,C")
+	 * 
 	 * @return a list of {@link SelectItem}s
 	 */
-	public List getSelectItems() {
+	public List<?> getSelectItems() {
 		return selectItems;
 	}
 
@@ -79,8 +80,7 @@ public class PlainSelect implements SelectBody {
 		into = table;
 	}
 
-
-	public void setSelectItems(List list) {
+	public void setSelectItems(List<?> list) {
 		selectItems = list;
 	}
 
@@ -88,28 +88,28 @@ public class PlainSelect implements SelectBody {
 		this.where = where;
 	}
 
-	
 	/**
 	 * The list of {@link Join}s
+	 * 
 	 * @return the list of {@link Join}s
 	 */
-	public List getJoins() {
+	public List<?> getJoins() {
 		return joins;
 	}
 
-	public void setJoins(List list) {
+	public void setJoins(List<?> list) {
 		joins = list;
 	}
 
-	public void accept(SelectVisitor selectVisitor){
+	public void accept(SelectVisitor selectVisitor) {
 		selectVisitor.visit(this);
 	}
 
-	public List getOrderByElements() {
+	public List<?> getOrderByElements() {
 		return orderByElements;
 	}
 
-	public void setOrderByElements(List orderByElements) {
+	public void setOrderByElements(List<?> orderByElements) {
 		this.orderByElements = orderByElements;
 	}
 
@@ -146,15 +146,16 @@ public class PlainSelect implements SelectBody {
 	}
 
 	/**
-	 * A list of {@link ColumnReference}s of the GROUP BY clause.
-	 * It is null in case there is no GROUP BY clause
-	 * @return a list of {@link ColumnReference}s 
+	 * A list of {@link ColumnReference}s of the GROUP BY clause. It is null in
+	 * case there is no GROUP BY clause
+	 * 
+	 * @return a list of {@link ColumnReference}s
 	 */
-	public List getGroupByColumnReferences() {
+	public List<?> getGroupByColumnReferences() {
 		return groupByColumnReferences;
 	}
 
-	public void setGroupByColumnReferences(List list) {
+	public void setGroupByColumnReferences(List<?> list) {
 		groupByColumnReferences = list;
 	}
 
@@ -162,8 +163,8 @@ public class PlainSelect implements SelectBody {
 		String sql = "";
 
 		sql = "SELECT ";
-		sql += ((distinct != null)?""+distinct+" ":"");
-		sql += ((top != null)?""+top+" ":"");
+		sql += ((distinct != null) ? "" + distinct + " " : "");
+		sql += ((top != null) ? "" + top + " " : "");
 		sql += getStringList(selectItems);
 		sql += " FROM " + fromItem;
 		sql += getFormatedList(joins, "", false, false);
@@ -171,31 +172,28 @@ public class PlainSelect implements SelectBody {
 		sql += getFormatedList(groupByColumnReferences, "GROUP BY");
 		sql += ((having != null) ? " HAVING " + having : "");
 		sql += orderByToString(orderByElements);
-		sql += ((limit != null) ? limit+"" : "");
+		sql += ((limit != null) ? limit + "" : "");
 
 		return sql;
 	}
 
-
-	public static String orderByToString(List orderByElements) {
+	public static String orderByToString(List<?> orderByElements) {
 		return getFormatedList(orderByElements, "ORDER BY");
 	}
 
-	
-	public static String getFormatedList(List list, String expression) {
+	public static String getFormatedList(List<?> list, String expression) {
 		return getFormatedList(list, expression, true, false);
 	}
 
-	
-	public static String getFormatedList(List list, String expression, boolean useComma, boolean useBrackets) {
+	public static String getFormatedList(List<?> list, String expression, boolean useComma, boolean useBrackets) {
 		String sql = getStringList(list, useComma, useBrackets);
 
 		if (sql.length() > 0) {
-		    if (expression.length() > 0) {
-		        sql = " " + expression + " " + sql;
-		    } else { 
-		        sql = " " + sql;
-		    }
+			if (expression.length() > 0) {
+				sql = " " + expression + " " + sql;
+			} else {
+				sql = " " + sql;
+			}
 		}
 
 		return sql;
@@ -206,42 +204,46 @@ public class PlainSelect implements SelectBody {
 	 * the List is null or empty an empty string is returned.
 	 * 
 	 * The same as getStringList(list, true, false)
+	 * 
 	 * @see #getStringList(List, boolean, boolean)
 	 * @param list
 	 *            list of objects with toString methods
 	 * @return comma separated list of the elements in the list
 	 */
-	public static String getStringList(List list) {
+	public static String getStringList(List<?> list) {
 		return getStringList(list, true, false);
 	}
 
 	/**
-	 * List the toString out put of the objects in the List that can be comma separated. If
-	 * the List is null or empty an empty string is returned.
+	 * List the toString out put of the objects in the List that can be comma
+	 * separated. If the List is null or empty an empty string is returned.
 	 * 
-	 * @param list list of objects with toString methods
-	 * @param useComma true if the list has to be comma separated
-	 * @param useBrackets true if the list has to be enclosed in brackets
+	 * @param list
+	 *            list of objects with toString methods
+	 * @param useComma
+	 *            true if the list has to be comma separated
+	 * @param useBrackets
+	 *            true if the list has to be enclosed in brackets
 	 * @return comma separated list of the elements in the list
 	 */
-	public static String getStringList(List list, boolean useComma, boolean useBrackets) {
+	public static String getStringList(List<?> list, boolean useComma, boolean useBrackets) {
 		String ans = "";
 		String comma = ",";
 		if (!useComma) {
-		    comma = "";
+			comma = "";
 		}
 		if (list != null) {
-		    if (useBrackets) {
-		        ans += "(";
-		    }
-		    
+			if (useBrackets) {
+				ans += "(";
+			}
+
 			for (int i = 0; i < list.size(); i++) {
 				ans += "" + list.get(i) + ((i < list.size() - 1) ? comma + " " : "");
 			}
-			
-		    if (useBrackets) {
-		        ans += ")";
-		    }
+
+			if (useBrackets) {
+				ans += ")";
+			}
 		}
 
 		return ans;

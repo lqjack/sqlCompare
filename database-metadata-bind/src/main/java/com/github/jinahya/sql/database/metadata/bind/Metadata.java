@@ -43,76 +43,60 @@ public class Metadata implements TableDomain {
 
     @Override
     public List<Table> getTables() {
-
         final List<Table> list = new ArrayList<Table>();
-
         for (final Catalog catalog : getCatalogs()) {
             list.addAll(catalog.getTables());
         }
-
         return list;
     }
-
 
     public boolean isAllProceduresAreCallable() {
         return allProceduresAreCallable;
     }
 
-
     public void setAllProceduresAreCallable(boolean allProceduresAreCallable) {
         this.allProceduresAreCallable = allProceduresAreCallable;
     }
-
 
     public boolean isAllTablesAreSelectable() {
         return allTablesAreSelectable;
     }
 
-
     public void setAllTablesAreSelectable(boolean allTablesAreSelectable) {
         this.allTablesAreSelectable = allTablesAreSelectable;
     }
-
 
     public boolean isAutoCommitFailureClosesAllResultSets() {
         return autoCommitFailureClosesAllResultSets;
     }
 
-
     public void setAutoCommitFailureClosesAllResultSets(boolean autoCommitFailureClosesAllResultSets) {
         this.autoCommitFailureClosesAllResultSets = autoCommitFailureClosesAllResultSets;
     }
-
 
     public List<Catalog> getCatalogs() {
         return catalogs;
     }
 
-
     public void setCatalogs(List<Catalog> catalogs) {
         this.catalogs = catalogs;
     }
-
 
     public boolean isCatalogAtStart() {
         return catalogAtStart;
     }
 
-
     public void setCatalogAtStart(boolean catalogAtStart) {
         this.catalogAtStart = catalogAtStart;
     }
-
 
     public String getCatalogSeparator() {
         return catalogSeparator;
     }
 
-
     public void setCatalogSeparator(String catalogSeparator) {
         this.catalogSeparator = catalogSeparator;
     }
-
 
     public String getCatalogTerm() {
         return catalogTerm;

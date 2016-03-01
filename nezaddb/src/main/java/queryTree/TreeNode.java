@@ -75,7 +75,7 @@ public abstract class TreeNode implements Serializable {
 		removeChildAt(getChildIndex(child));
 	}
 	public void displayNode(){
-		System.out.println(nodeName);
+		System.out.println(getContent());
 	}
 	abstract public String getNodeType();
 	public void setNodeID(int nodeID) {

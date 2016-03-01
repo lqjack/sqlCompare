@@ -35,9 +35,13 @@ public class CCJSqlParserManager implements JSqlParser {
 	public Statement parse(Reader statementReader) throws JSQLParserException {
 		CCJSqlParser parser = new CCJSqlParser(statementReader);
 		try {
-			return parser.Statement();
+			return parser.statement();
 		} catch (Throwable e) {
 			throw new JSQLParserException(e);
 		}
+	}
+	
+	public CCJSqlParser getInstance(String sql){
+		return new  CCJSqlParser(sql);
 	}
 }

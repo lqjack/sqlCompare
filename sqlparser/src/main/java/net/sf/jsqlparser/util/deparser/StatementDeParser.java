@@ -2,6 +2,7 @@ package net.sf.jsqlparser.util.deparser;
 
 import java.util.Iterator;
 
+import net.sf.jsqlparser.statement.Statement;
 import net.sf.jsqlparser.statement.StatementVisitor;
 import net.sf.jsqlparser.statement.allocate.Allocate;
 import net.sf.jsqlparser.statement.create.table.CreateTable;
@@ -23,9 +24,26 @@ import net.sf.jsqlparser.statement.update.Update;
 
 public class StatementDeParser implements StatementVisitor {
 	protected StringBuffer buffer;
+	Statement statement;
 
 	public StatementDeParser(StringBuffer buffer) {
 		this.buffer = buffer;
+	}
+
+	public StatementDeParser(Statement statement) {
+		this.statement = statement;
+	}
+
+	public void visit() {
+		if (statement instanceof CreateTable) {
+			visit((CreateTable) statement);
+		} else if (statement instanceof Delete) {
+			visit((Delete) statement);
+		} else if (statement instanceof Select) {
+			visit((Select) statement);
+		} else {
+			throw new IllegalArgumentException();
+		}
 	}
 
 	public void visit(CreateTable createTable) {
@@ -44,12 +62,11 @@ public class StatementDeParser implements StatementVisitor {
 
 	public void visit(Drop drop) {
 		// TODO Auto-generated method stub
-
 	}
 
 	public void visit(Insert insert) {
 		SelectDeParser selectDeParser = new SelectDeParser();
-		selectDeParser.setBuffer(buffer);
+		this.setBuffer(buffer);
 		ExpressionDeParser expressionDeParser = new ExpressionDeParser(selectDeParser, buffer);
 		selectDeParser.setExpressionVisitor(expressionDeParser);
 		InsertDeParser insertDeParser = new InsertDeParser(expressionDeParser, selectDeParser, buffer);
@@ -73,8 +90,8 @@ public class StatementDeParser implements StatementVisitor {
 		selectDeParser.setExpressionVisitor(expressionDeParser);
 		if (select.getWithItemsList() != null && !select.getWithItemsList().isEmpty()) {
 			buffer.append("WITH ");
-			for (Iterator iter = select.getWithItemsList().iterator(); iter.hasNext();) {
-				WithItem withItem = (WithItem)iter.next();
+			for (Iterator<?> iter = select.getWithItemsList().iterator(); iter.hasNext();) {
+				WithItem withItem = (WithItem) iter.next();
 				buffer.append(withItem);
 				if (iter.hasNext())
 					buffer.append(",");
@@ -82,12 +99,10 @@ public class StatementDeParser implements StatementVisitor {
 			}
 		}
 		select.getSelectBody().accept(selectDeParser);
-
 	}
 
 	public void visit(Truncate truncate) {
 		// TODO Auto-generated method stub
-
 	}
 
 	public void visit(Update update) {
@@ -111,49 +126,41 @@ public class StatementDeParser implements StatementVisitor {
 	@Override
 	public void visit(VerticalFragment fragment) {
 		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void visit(HorizontalFragment horizontalFragment) {
 		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void visit(Allocate allocate) {
 		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void visit(ImportData importdata) {
 		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void visit(SetSite setSite) {
 		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void visit(CreateDatabase createDatabase) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void visit(UseDatabase useDatabase) {
 		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void visit(Init init) {
 		// TODO Auto-generated method stub
-		
 	}
-
 }

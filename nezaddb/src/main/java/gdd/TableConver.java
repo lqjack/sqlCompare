@@ -1,22 +1,23 @@
 package gdd;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
-import com.github.jinahya.sql.database.metadata.bind.Table;
+import configuration.TableMeta;
 
 public class TableConver {
 
-	public static TableInfo conver(Table table) {
+	public static TableInfo conver(TableMeta table) {
 		TableInfo tableInfo = new TableInfo();
-		tableInfo.setTableName(table.getTableName());
+		tableInfo.setTableName(table.toString());
 		return tableInfo;
 	}
 
-	public static List<TableInfo> conver(List<Table> tables) {
-		List<TableInfo> tabInfos = new ArrayList<TableInfo>();
-		for (Table table : tables)
-			tabInfos.add(conver(table));
-		return tabInfos;
+	public static Collection<TableInfo> conver(List<TableMeta> tables){
+		Collection<TableInfo> tis = new ArrayList<TableInfo>();
+		for(TableMeta tm : tables)
+			tis.add(conver(tm));
+		return tis;
 	}
 }

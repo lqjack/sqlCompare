@@ -1,21 +1,5 @@
 package communication;
 
-import java.io.BufferedWriter;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.sql.SQLException;
-import java.util.Vector;
-
-import com.sun.net.httpserver.Headers;
-import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpHandler;
-
-import configuration.Configuration;
 import dbcore.DbManager;
 import dbcore.DbTable;
 import executeResult.CreateDBExecuteResult;
@@ -28,6 +12,18 @@ import executeResult.SelectExecuteResult;
 import executeResult.SiteExecuteResult;
 import gdd.GDD;
 import globalDefinition.CONSTANT;
+
+import java.io.BufferedWriter;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.sql.SQLException;
+import java.util.Vector;
+
 import queryTree.TreeNode;
 import slaveExecute.DeleteRecordExecute;
 import slaveExecute.SelectExecutePlan;
@@ -37,6 +33,12 @@ import slaveExecuteResult.SlaveCreateTableResult;
 import slaveExecuteResult.SlaveDeleteResult;
 import slaveExecuteResult.SlaveImportResult;
 import slaveExecuteResult.SlaveInsertResult;
+
+import com.sun.net.httpserver.Headers;
+import com.sun.net.httpserver.HttpExchange;
+import com.sun.net.httpserver.HttpHandler;
+
+import configuration.Configuration;
 
 public class DataServer extends ServerBase {
     private GDD gdd;

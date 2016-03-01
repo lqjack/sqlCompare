@@ -18,7 +18,6 @@ import net.sf.jsqlparser.statement.select.Limit;
 import net.sf.jsqlparser.statement.select.OrderByElement;
 import net.sf.jsqlparser.statement.select.OrderByVisitor;
 import net.sf.jsqlparser.statement.select.PlainSelect;
-import net.sf.jsqlparser.statement.select.Select;
 import net.sf.jsqlparser.statement.select.SelectExpressionItem;
 import net.sf.jsqlparser.statement.select.SelectItem;
 import net.sf.jsqlparser.statement.select.SelectItemVisitor;
@@ -34,7 +33,7 @@ import net.sf.jsqlparser.statement.select.Union;
  */
 public class SelectDeParser implements SelectVisitor, OrderByVisitor, SelectItemVisitor, FromItemVisitor, ColumnReferenceVisitor {
 	protected StringBuffer buffer;
-	protected ExpressionVisitor expressionVisitor;
+	protected ExpressionVisitor expressionVisitor; 
 
 	public SelectDeParser() {
 	}
@@ -50,6 +49,7 @@ public class SelectDeParser implements SelectVisitor, OrderByVisitor, SelectItem
 	}
 
 	public void visit(PlainSelect plainSelect) {
+		buffer = new StringBuffer();
 		buffer.append("SELECT ");
 		Top top = plainSelect.getTop();
 		if (top != null)
@@ -58,7 +58,7 @@ public class SelectDeParser implements SelectVisitor, OrderByVisitor, SelectItem
 			buffer.append("DISTINCT ");
 			if (plainSelect.getDistinct().getOnSelectItems() != null) {
 				buffer.append("ON (");
-				for (Iterator iter = plainSelect.getDistinct().getOnSelectItems().iterator(); iter.hasNext();) {
+				for (Iterator<?> iter = plainSelect.getDistinct().getOnSelectItems().iterator(); iter.hasNext();) {
 					SelectItem selectItem = (SelectItem) iter.next();
 					selectItem.accept(this);
 					if (iter.hasNext()) {
@@ -70,7 +70,7 @@ public class SelectDeParser implements SelectVisitor, OrderByVisitor, SelectItem
 
 		}
 
-		for (Iterator iter = plainSelect.getSelectItems().iterator(); iter.hasNext();) {
+		for (Iterator<?> iter = plainSelect.getSelectItems().iterator(); iter.hasNext();) {
 			SelectItem selectItem = (SelectItem) iter.next();
 			selectItem.accept(this);
 			if (iter.hasNext()) {
@@ -86,7 +86,7 @@ public class SelectDeParser implements SelectVisitor, OrderByVisitor, SelectItem
 		}
 
 		if (plainSelect.getJoins() != null) {
-			for (Iterator iter = plainSelect.getJoins().iterator(); iter.hasNext();) {
+			for (Iterator<?> iter = plainSelect.getJoins().iterator(); iter.hasNext();) {
 				Join join = (Join) iter.next();
 				deparseJoin(join);		
 			}
@@ -99,7 +99,7 @@ public class SelectDeParser implements SelectVisitor, OrderByVisitor, SelectItem
 
 		if (plainSelect.getGroupByColumnReferences() != null) {
 			buffer.append(" GROUP BY ");
-			for (Iterator iter = plainSelect.getGroupByColumnReferences().iterator(); iter.hasNext();) {
+			for (Iterator<?> iter = plainSelect.getGroupByColumnReferences().iterator(); iter.hasNext();) {
 				ColumnReference columnReference = (ColumnReference) iter.next();
 				columnReference.accept(this);
 				if (iter.hasNext()) {
@@ -124,7 +124,7 @@ public class SelectDeParser implements SelectVisitor, OrderByVisitor, SelectItem
 	}
 
 	public void visit(Union union) {
-		for (Iterator iter = union.getPlainSelects().iterator(); iter.hasNext();) {
+		for (Iterator<?> iter = union.getPlainSelects().iterator(); iter.hasNext();) {
 			buffer.append("(");
 			PlainSelect plainSelect = (PlainSelect) iter.next();
 			plainSelect.accept(this);
