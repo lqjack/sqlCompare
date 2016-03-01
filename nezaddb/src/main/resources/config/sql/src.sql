@@ -141,4 +141,3 @@ left outer join gtipdba.BO_ORD_FX bfx on fx.DEAL_NUMBER = bfx.DEAL_NUMBER
 left outer join GTIPDBA.BO_ORD_SI si on bfx.fsi_tid = si.wss_tid
 WHERE nvl(BFX.WSS_GDP_TIME, fx.WSS_GDP_TIME) >= to_date( '2015-02-24 00:00:00', 'YYYY-MM-DD hh24:mi:ss')
 and css.ibs_site = 'BOS';
---Limited Access

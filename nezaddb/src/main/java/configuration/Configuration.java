@@ -42,7 +42,7 @@ public class Configuration {
 
 	public static Configuration getInstance(String driverClass, String url, String user, String password)
 			throws SQLException, ReflectiveOperationException {
-		initMetaInfo(ConnectionUtils.getConnection(driverClass, url, user, password).getMetaData());
+//		initMetaInfo(ConnectionUtils.getConnection(driverClass, url, user, password).getMetaData());
 		return configuration;
 	}
 
