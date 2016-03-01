@@ -60,11 +60,12 @@
 			<artifactId>powermock-api-mockito</artifactId>
 			<version>1.6.2</version>
 		</dependency>
-		<dependency>
+		<!-- should be append the MAVEN repository -->
+		<!-- <dependency>
 			<groupId>ojdbc14</groupId>
 			<artifactId>ojdbc14</artifactId>
 			<version>10.2</version>
-		</dependency>
+		</dependency> -->
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
