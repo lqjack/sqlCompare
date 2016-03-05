@@ -15,11 +15,16 @@ import net.sf.jsqlparser.statement.Statement;
 public class ConfigurartionIT {
 
 	@Test
-	public void testCfg() throws SQLException, ReflectiveOperationException, JSQLParserException {
+	public void testCfg() throws SQLException, ReflectiveOperationException {
 		Configuration config = Configuration.getInstance();
 		assertNotNull(config);
 		CCJSqlParserManager pm = new CCJSqlParserManager();
-		Statement statment = pm.parse(new StringReader(config.getSrcSql()));
+		Statement statment = null;
+		try {
+			statment = pm.parse(new StringReader(config.getSrcSql()));
+		} catch (JSQLParserException e) {
+			e.printStackTrace();
+		}
 		assertNotNull(statment);
 		
 		
